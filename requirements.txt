@@ -6,3 +6,4 @@ matplotlib
 tqdm
 pickle5
 h5py
+pydicom
