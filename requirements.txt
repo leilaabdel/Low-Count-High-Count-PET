@@ -1,0 +1,8 @@
+numpy
+glob2
+pandas
+nibabel
+matplotlib
+tqdm
+pickle5
+h5py
