@@ -8,3 +8,6 @@ pickle5
 h5py
 pydicom
 keras
+scipy
+tensorflow
+scikit-image

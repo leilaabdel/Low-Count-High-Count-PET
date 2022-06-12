@@ -1,4 +1,4 @@
-import dicom
+import pydicom
 import nibabel as nib
 import numpy as np
 from cafndl_utils import augment_data

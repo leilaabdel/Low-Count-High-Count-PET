@@ -1,8 +1,8 @@
 
 import tensorflow as tf
 from keras.models import Model
-from keras.layers import Input, merge, Conv2D, Conv2DTranspose, BatchNormalization, Convolution2D, MaxPooling2D, UpSampling2D, Dense, concatenate
-from keras.layers.merge import add as keras_add
+from keras.layers import Input, Concatenate, Conv2D, Conv2DTranspose, BatchNormalization, Convolution2D, MaxPooling2D, UpSampling2D, Dense, concatenate
+from keras.layers import Add as keras_add
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras.optimizers import Adam
 from keras.losses import mean_absolute_error, mean_squared_error
