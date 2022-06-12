@@ -548,8 +548,7 @@ class DataGenerator(object):
 		# Find exploration order
 		indexes = np.arange(len(list_IDs))
 		if self.shuffle == True:
-			  np.random.shuffle(indexes)
-
+			np.random.shuffle(indexes)
 		return indexes
 
 	def __data_generation(self, dir_sample, list_IDs_temp, ext_data = 'npz'):
@@ -618,7 +617,7 @@ training
 '''
 index_hyper_start = 0
 num_hyper_parameter = len(list_hyper_parameters)
-for index_hyper in xrange(index_hyper_start, num_hyper_parameter):
+for index_hyper in range(index_hyper_start, num_hyper_parameter):
 	hyper_train = dict(list_hyper_parameters[index_hyper])
 	print('hyper parameters:', hyper_train)
 	# init
