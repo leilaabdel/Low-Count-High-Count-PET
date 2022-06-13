@@ -33,7 +33,11 @@ def move_reconstructed_files(starting_folder_path, final_data_path, ground_truth
                 shutil.copyfile(gt_pet_path, os.path.join(pet_destination, "gt_recon.nii.gz"))
 
                 ## Copy the T1 mask files
-                mask_file_path = f"{ground_truth_path}/{pat_id}/PET/SUVR_2mm-processing/aparc+aseg_BIN-2mm.nii.gz"
+                mask_file_path = f"{ground_truth_path}/{pat_id}/PET/SUVR_2mm-processing/aparc+aseg_BIN.nii.gz"
                 shutil.copyfile(mask_file_path, os.path.join(mri_destination, "gt_t1_head_mask.nii.gz"))
+
+                ## Copy the T1 image files 
+                t1_file_path = f"{ground_truth_path}/{pat_id}/PET/SUVR_2mm-processing/T1.nii.gz"
+                shutil.copyfile(t1_file_path, os.path.join(mri_destination, "t1_original.nii.gz"))
 
             
