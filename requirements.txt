@@ -11,3 +11,4 @@ keras
 scipy
 tensorflow
 scikit-image
+opencv-python

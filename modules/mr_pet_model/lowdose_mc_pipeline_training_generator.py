@@ -10,7 +10,6 @@ from scipy import io as sio
 import numpy as np
 import os
 from cafndl_fileio import prepare_data_from_nifti
-import pydicom
 import nibabel as nib
 import datetime
 import matplotlib
@@ -613,7 +612,7 @@ setup learning
 '''
 # hyper parameter in each train iteration
 #list_hyper_parameters=[{'lr':0.001,'epochs':50},{'lr':0.0002,'epochs':50},{'lr':0.0001,'epochs':30}]
-list_hyper_parameters=[{'lr':0.0002,'epochs':100}]
+list_hyper_parameters=[{'lr':0.0002,'epochs':3}]
 type_activation_output = 'linear'
 
 
@@ -671,6 +670,7 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 
 	# fit data
 	t_start_train = datetime.datetime.now()
+	
 	try:
 		# history = model.fit(data_train_input,
 		# 				data_train_residual, 
@@ -689,7 +689,7 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 					callbacks =[model_checkpoint],
 					validation_data = validation_generator,
 					validation_steps = len(list_indexes_val)/batch_size,
-					max_q_size = 16,
+					# max_q_size = 16,
 					)		
 	except:
 		history = []

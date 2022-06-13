@@ -4,10 +4,10 @@ from skimage.metrics import mean_squared_error, normalized_root_mse, peak_signal
 
 # psnr with TF
 try:
-	from keras import backend as K
-	from tensorflow import log as tf_log
-	from tensorflow import constant as tf_constant
-	import tensorflow as tf
+	from tensorflow.python.keras import backend as K
+	from tensorflow.compat.v1 import log as tf_log
+	from tensorflow.compat.v1 import constant as tf_constant
+	import tensorflow.compat.v1 as tf
 except:
 	print('import keras and tf backend failed')
 
