@@ -1,13 +1,13 @@
 import numpy as np
 # use skimage metrics
-from skimage.measure import compare_mse, compare_nrmse, compare_psnr, compare_ssim
+from skimage.metrics import mean_squared_error, normalized_root_mse, peak_signal_noise_ratio, structural_similarity
 
 # psnr with TF
 try:
-	from keras import backend as K
-	from tensorflow import log as tf_log
-	from tensorflow import constant as tf_constant
-	import tensorflow as tf
+	from tensorflow.python.keras import backend as K
+	from tensorflow.compat.v1 import log as tf_log
+	from tensorflow.compat.v1 import constant as tf_constant
+	import tensorflow.compat.v1 as tf
 except:
 	print('import keras and tf backend failed')
 
@@ -46,13 +46,13 @@ def getErrorMetrics(im_pred, im_gt, mask = None):
 
 	# NRMSE
 	try:
-		rmse_pred = compare_nrmse(im_gt, im_pred)
+		rmse_pred = normalized_root_mse(im_gt, im_pred)
 	except:
 		rmse_pred = float('nan')
 
 	# PSNR
 	try:
-		psnr_pred = compare_psnr(im_gt, im_pred)
+		psnr_pred = peak_signal_noise_ratio(im_gt, im_pred)
 	except:
 		psnr_pred = float('nan')
 		#psnr_pred = psnr(im_gt, im_pred)
@@ -60,7 +60,7 @@ def getErrorMetrics(im_pred, im_gt, mask = None):
 	
 	# ssim
 	try:
-		ssim_pred = compare_ssim(im_gt, im_pred)
+		ssim_pred = structural_similarity(im_gt, im_pred)
 		score_ismrm = sum((np.abs(im_gt.flatten()-im_pred.flatten())<0.1)*mask)/(sum(mask)+0.0)*10000
 	except:
 		ssim_pred = float('nan')
