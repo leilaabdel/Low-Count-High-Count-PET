@@ -9,6 +9,7 @@
 from scipy import io as sio
 import numpy as np
 import os
+from cafndl_fileio import prepare_data_from_nifti
 import pydicom
 import nibabel as nib
 import datetime
@@ -397,16 +398,16 @@ def export_data_to_npz(data_train_input, data_train_gt,dir_numpy_compressed, ind
 	index_sample_accumuated = index_sample_total
 	num_sample_in_data = data_train_input.shape[0]
 	if not os.path.exists(dir_numpy_compressed):
-		os.mkdir(dir_numpy_compressed)
+		os.makedirs(dir_numpy_compressed, exist_ok=True)
 		print('create directory {0}'.format(dir_numpy_compressed))
 	print('start to export data dimension {0}->{1} to {2} for index {3}', 
 		  data_train_input.shape, data_train_gt.shape, dir_numpy_compressed, 
 		  index_sample_total)        
-	for i in xrange(num_sample_in_data):
+	for i in range(num_sample_in_data):
 		im_input = data_train_input[i,:]
 		im_output = data_train_gt[i,:]
 		filepath_npz = os.path.join(dir_numpy_compressed,'{0}.{1}'.format(index_sample_accumuated, ext_data))
-		with open(filepath_npz,'w') as file_input:
+		with open(filepath_npz,'wb') as file_input:
 			np.savez_compressed(file_input, input=im_input, output=im_output)
 		index_sample_accumuated+=1
 	print('exported data dimension {0}->{1} to {2} for index {3}', 
@@ -422,12 +423,12 @@ list_train_gt = []
 index_sample_total = 0      
 for index_data in range(num_dataset_train):
 	# directory
-	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/headmask_inv.nii', list_augments, False)
+	# headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/headmask_inv.nii', list_augments, False)
 	list_data_train_input = []
 	for path_train_input in list_dataset_train[index_data]['input']:
 		# load data
 		data_train_input = prepare_data_from_nifti(path_train_input, list_augments)
-		data_train_input = np.multiply(data_train_input, headmask)
+		data_train_input = data_train_input #np.multiply(data_train_input, headmask)
 		list_data_train_input.append(data_train_input)
 	data_train_input = np.concatenate(list_data_train_input, axis=-1)
 	
@@ -435,7 +436,7 @@ for index_data in range(num_dataset_train):
 	# load data ground truth
 	path_train_gt = list_dataset_train[index_data]['gt']
 	data_train_gt = prepare_data_from_nifti(path_train_gt, list_augments)
-	data_train_gt = np.multiply(data_train_gt, headmask)
+	# data_train_gt = np.multiply(data_train_gt, headmask) # REMOVE HEADMASK FOR NOW
 	#data_train_residual = data_train_gt - data_train_input[:,:,:,0:1] # changed!
 	# append
 	# list_train_input.append(data_train_input)
@@ -625,7 +626,7 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 	hyper_train = dict(list_hyper_parameters[index_hyper])
 	print('hyper parameters:', hyper_train)
 	# init
-	if hyper_train.has_key('init'):
+	if 'init' in hyper_train:
 		try:
 			model.load_weights(hyper_train['init'])
 		except:
@@ -643,21 +644,21 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 			print('failed to learn from checkpoint ' + hyper_train['init'])     
 			pass
 	# update filename and checkpoint
-	if hyper_train.has_key('ckpt'):
+	if 'ckpt' in hyper_train:
 		filename_checkpoint = hyper_train['ckpt']
 	else:
 		hyper_train['ckpt'] = filename_checkpoint
 	model_checkpoint = ModelCheckpoint(filename_checkpoint, monitor='val_loss', save_best_only=True)		
 
 	# update leraning rate
-	if hyper_train.has_key('lr'):
+	if 'lr' in hyper_train:
 		model.optimizer = Adam(lr=hyper_train['lr'])
 	else:
 		hyper_train['lr'] = -1 #default
 
 	
 	# update epochs
-	if hyper_train.has_key('epochs'):
+	if 'epochs' in hyper_train:
 		epochs = hyper_train['epochs']
 	else:
 		hyper_train['epochs'] = 50

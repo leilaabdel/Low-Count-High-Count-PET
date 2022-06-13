@@ -8,8 +8,9 @@ def prepare_data_from_nifti(path_load, list_augments=[], scale_by_norm=True):
 	nib_load = nib.load(path_load)
 	print(nib_load.header)
 	# get data
-	data_load = nib_load.get_data()
+	data_load = np.squeeze(nib_load.get_fdata())
 	# transpose to slice*x*y*channel
+	print("SHAPE", data_load.shape)
 	data_load = np.transpose(data_load[:,:,:,np.newaxis], [2,0,1,3])
 	# scale
 	if scale_by_norm:
