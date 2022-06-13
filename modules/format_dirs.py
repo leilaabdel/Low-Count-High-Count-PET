@@ -20,11 +20,20 @@ def move_reconstructed_files(starting_folder_path, final_data_path, ground_truth
 
                 ## Only move those files that have nifty reconstructions
                 pet_destination = f"{final_data_path}/{pat_id}/pet_nifti/"
+                mri_destination = f"{final_data_path}/{pat_id}/mr_nifti/"
+                
                 os.makedirs(pet_destination, exist_ok=True)
+                os.makedirs(mri_destination, exist_ok=True)
+
+                ## Copy the reconstructed PETs 
                 [shutil.copyfile(file, os.path.join(pet_destination, os.path.basename(file))) for file in sub_files]
 
                 ## Copy the GT PET
                 gt_pet_path = f"{ground_truth_path}/{pat_id}/PET/PET_60-90_SUV.nii.gz" 
                 shutil.copyfile(gt_pet_path, os.path.join(pet_destination, "gt_recon.nii.gz"))
+
+                ## Copy the T1 mask files
+                mask_file_path = f"{ground_truth_path}/{pat_id}/PET/SUVR_2mm-processing/aparc+aseg_BIN-2mm.nii.gz"
+                shutil.copyfile(mask_file_path, os.path.join(mri_destination, "gt_t1_head_mask.nii.gz"))
 
             

@@ -423,11 +423,13 @@ index_sample_total = 0
 for index_data in range(num_dataset_train):
 	# directory
 	# headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/headmask_inv.nii', list_augments, False)
+	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1]), list_augments, False)
+
 	list_data_train_input = []
 	for path_train_input in list_dataset_train[index_data]['input']:
 		# load data
 		data_train_input = prepare_data_from_nifti(path_train_input, list_augments)
-		data_train_input = data_train_input #np.multiply(data_train_input, headmask)
+		data_train_input = np.multiply(data_train_input, headmask) # data_train_input 
 		list_data_train_input.append(data_train_input)
 	data_train_input = np.concatenate(list_data_train_input, axis=-1)
 	
