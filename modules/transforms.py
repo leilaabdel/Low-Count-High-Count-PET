@@ -1,9 +1,10 @@
+from fcntl import F_SETFL
 from scipy import ndimage
 import nibabel as nib
 import numpy as np
 import SimpleITK as sitk
 import os
-from pathlib import Path
+import subprocess
 
 
 
@@ -22,3 +23,8 @@ def convert_dcm_to_nii(dicom_series_path, nii_outpath):
     print("Converted .dcm series to .nii file" + "\nImage size:", size[0], size[1], size[2])
 
     sitk.WriteImage(image, nii_outpath)
+
+
+def register_imgs(static_img_path, moving_img_path, registered_output_path):
+    subprocess.run(["bash",  "../modules/reg_resample.sh",  static_img_path, moving_img_path, registered_output_path], shell=False)
+   
