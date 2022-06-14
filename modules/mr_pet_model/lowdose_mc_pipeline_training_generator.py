@@ -39,7 +39,7 @@ FINAL_DATA_PATH_FOR_MODEL = f"/autofs/space/celer_001/users/{USER}/data/{TRACER}
 list_dataset_train =  [
 				{ #4
 				 'input':[f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/OP-recon-180-s-low-count.nii",
-				 		#   '/data3/Amyloid/1350/mr_nifti/T1_nifti_inv.nii',
+				 		  f'{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/mr_nifti/t1_img_registered.nii.gz',
 #				 		  '/data3/Amyloid/1350/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
 				 		#   '/data3/Amyloid/1350/mr_nifti/T2_nifti_inv.nii',
 				 		#   '/data3/Amyloid/1350/mr_nifti/T2_FLAIR_nifti_inv.nii'
@@ -423,7 +423,7 @@ index_sample_total = 0
 for index_data in range(num_dataset_train):
 	# directory
 	# headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/headmask_inv.nii', list_augments, False)
-	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1]), list_augments, False)
+	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/t1_mask_registered.nii.gz', list_augments, False)
 
 	list_data_train_input = []
 	for path_train_input in list_dataset_train[index_data]['input']:
@@ -597,7 +597,7 @@ validation_generator = DataGenerator(**params_generator).generate(dir_samples, l
 '''
 sanity check
 
-model.fit_generator(
+model.fit(
 					generator = training_generator,
 					steps_per_epoch = 1,
 					epochs = 1,
@@ -614,7 +614,7 @@ setup learning
 '''
 # hyper parameter in each train iteration
 #list_hyper_parameters=[{'lr':0.001,'epochs':50},{'lr':0.0002,'epochs':50},{'lr':0.0001,'epochs':30}]
-list_hyper_parameters=[{'lr':0.0002,'epochs':3}]
+list_hyper_parameters=[{'lr':0.0002,'epochs':1}]
 type_activation_output = 'linear'
 
 
@@ -684,7 +684,7 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 		# 				verbose=1)
 
 		print('train with hyper parameters:', hyper_train)
-		history = model.fit_generator(
+		history = model.fit(
 					generator = training_generator,
 					steps_per_epoch = len(list_indexes_train)/batch_size,
 					epochs = epochs,
