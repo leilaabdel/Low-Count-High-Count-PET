@@ -1,9 +1,11 @@
+from codecs import ascii_encode
 import glob
 import shutil
 import os
 from tqdm import tqdm
+from modules import transforms
 
-def move_reconstructed_files(starting_folder_path, final_data_path, ground_truth_path=None, recon_alg = "OP"):
+def move_reconstructed_files(starting_folder_path, final_data_path, recon_trial_name, ground_truth_path=None, recon_alg = "OP"):
     all_patient_paths = glob.glob(f"{starting_folder_path}")
 
     recon_with_gt = None
@@ -11,11 +13,19 @@ def move_reconstructed_files(starting_folder_path, final_data_path, ground_truth
     if ground_truth_path != None:
        
         # Check if there is a known reconstruction
-        for recon in tqdm(all_patient_paths):
-            pat_id = recon.split("/")[-2]
-            sub_files = glob.glob(f"{recon}/{recon_alg}*.nii")
-            if len(sub_files) > 0:
+        for path in tqdm(all_patient_paths):
+            pat_id = path.split("/")[-2]
 
+
+            dcm_sub_files = glob.glob(f"{path}/**/**/{recon_trial_name}**{recon_alg}**/")
+
+            if len(dcm_sub_files) > 0:
+                print("*** MOVING FILES ***")
+
+                for dcm_path in dcm_sub_files:
+                    final_nii_pet_reconstruct_path = f"{path}/{recon_trial_name}_{recon_alg}.nii.gz"
+                    transforms.convert_dcm_to_nii(dcm_path, final_nii_pet_reconstruct_path)
+                
                 # Move the PET files
 
                 ## Only move those files that have nifty reconstructions
@@ -26,7 +36,7 @@ def move_reconstructed_files(starting_folder_path, final_data_path, ground_truth
                 os.makedirs(mri_destination, exist_ok=True)
 
                 ## Copy the reconstructed PETs 
-                [shutil.copyfile(file, os.path.join(pet_destination, os.path.basename(file))) for file in sub_files]
+                shutil.copyfile(final_nii_pet_reconstruct_path, os.path.join(pet_destination, os.path.basename(final_nii_pet_reconstruct_path)))
 
                 ## Copy the GT PET
                 gt_pet_path = f"{ground_truth_path}/{pat_id}/PET/PET_60-90_SUV.nii.gz" 
@@ -40,4 +50,4 @@ def move_reconstructed_files(starting_folder_path, final_data_path, ground_truth
                 t1_file_path = f"{ground_truth_path}/{pat_id}/PET/SUVR_2mm-processing/T1.nii.gz"
                 shutil.copyfile(t1_file_path, os.path.join(mri_destination, "t1_original.nii.gz"))
 
-            
+                
