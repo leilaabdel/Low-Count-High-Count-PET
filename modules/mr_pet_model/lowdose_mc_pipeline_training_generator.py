@@ -23,6 +23,7 @@ from cafndl_network import *
 from keras.callbacks import ModelCheckpoint
 from keras.optimizers import Adam
 import tensorflow as tf
+import argparse
 
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 # exit()
@@ -35,7 +36,9 @@ ckpt_id = sys.argv[1]
 '''
 dataset
 '''
-filename_checkpoint = '../ckpt/'+ckpt_id+'.ckpt'  # model_demo_1130_ASL_set1
+
+# filename_checkpoint = '../ckpt/'+ckpt_id+'.'  # model_demo_1130_ASL_set1
+filename_checkpoint = os.path.join('../ckpt' , "weights-{epoch:03d}-{val_loss:.4f}.hdf5")
 filename_init = ''
 USER = "leila"
 TRACER = "pbr28"
@@ -491,7 +494,7 @@ init model
 '''
 callback_checkpoint = ModelCheckpoint(filename_checkpoint, 
 								monitor='val_loss', 
-								save_best_only=True)
+								save_best_only=True, save_weights_only=True, save_freq='epoch')
 setKerasMemory(keras_memory)
 model = deepEncoderDecoder(num_channel_input = num_channel_input,
 						num_channel_output = num_channel_output,
@@ -625,7 +628,7 @@ setup learning
 '''
 # hyper parameter in each train iteration
 #list_hyper_parameters=[{'lr':0.001,'epochs':50},{'lr':0.0002,'epochs':50},{'lr':0.0001,'epochs':30}]
-MOD_EPOCHS = 5
+MOD_EPOCHS = 100
 list_hyper_parameters=[{'lr':0.0002,'epochs':MOD_EPOCHS}]
 type_activation_output = 'linear'
 
@@ -661,7 +664,9 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 		filename_checkpoint = hyper_train['ckpt']
 	else:
 		hyper_train['ckpt'] = filename_checkpoint
-	model_checkpoint = ModelCheckpoint(filename_checkpoint, monitor='val_loss', save_best_only=True)		
+	model_checkpoint =  ModelCheckpoint(filename_checkpoint, 
+								monitor='val_loss', 
+								save_best_only=True, save_weights_only=True, save_freq='epoch')	
 
 	# update leraning rate
 	if 'lr' in hyper_train:

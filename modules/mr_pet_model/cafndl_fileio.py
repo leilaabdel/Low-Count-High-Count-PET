@@ -1,9 +1,11 @@
+from tabnanny import verbose
 import pydicom
 import nibabel as nib
 import numpy as np
 from cafndl_utils import augment_data
 import pickle
 import glob 
+import os
 
 def generate_file_list_object(filtered_patient_list_path, input_data_root, trial_time="3600-180", recon_alg="OP"):
     list_dataset_train = []
@@ -54,4 +56,15 @@ def prepare_data_from_nifti(path_load, list_augments=[], scale_by_norm=True):
 	return data_load #, norm_factor # KC 20171018
 
 
+def generateNiiFromImageObject(model,data_train_input, out_path):
 	
+	# for slice in data_train_input:
+		high_count_pred = model.predict(data_train_input, verbose=1)
+		high_count_pred = np.squeeze(np.swapaxes(high_count_pred, 0, 2))
+		high_count_pred = np.flip(high_count_pred, axis=1)
+		high_count_pred = np.rot90(high_count_pred)
+		print("SHAPE_FINAL", high_count_pred.shape)
+		high_count_pred_nii = nib.Nifti1Image(high_count_pred, affine=np.eye(4))
+		nib.save(high_count_pred_nii, out_path)
+
+
