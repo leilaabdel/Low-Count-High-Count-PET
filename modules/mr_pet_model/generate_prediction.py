@@ -19,7 +19,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import argparse
 from cafndl_network import deepEncoderDecoder
-from cafndl_fileio import prepare_data_from_nifti, generate_file_list_object, generateNiiFromImageObject
+from cafndl_fileio import prepare_data_from_nifti, generate_file_list_object, generateNiiFromImageObject, generate_masked_nii
 
 #paths
 USER = "leila"
@@ -104,7 +104,13 @@ for index_data in range(num_dataset_train):
     path_train_gt = list_dataset_train[index_data]['gt']
     data_train_gt = prepare_data_from_nifti(path_train_gt, list_augments)
     
+    # Generate the prediction image and save to .nii.gz
     generateNiiFromImageObject(model, data_train_input, pet_save_path)
+
+    gt_path = list_dataset_train[index_data]['gt']
+    mask_path = os.path.dirname(list_dataset_train[index_data]['input'][1])+'/t1_mask_registered.nii.gz'
+    gt_mask_save_path = pet_save_path = os.path.join(os.path.dirname(list_dataset_train[index_data]['input'][0]) , "masked_gt.nii.gz")
+    generate_masked_nii(gt_path, mask_path, gt_mask_save_path)
 
 
 

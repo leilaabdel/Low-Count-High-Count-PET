@@ -67,4 +67,9 @@ def generateNiiFromImageObject(model,data_train_input, out_path):
 		high_count_pred_nii = nib.Nifti1Image(high_count_pred, affine=np.eye(4))
 		nib.save(high_count_pred_nii, out_path)
 
-
+def generate_masked_nii(input_img_path, mask_img_path, out_path):
+	input_img = nib.load(input_img_path).get_fdata()
+	mask_img = nib.load(mask_img_path).get_fdata()
+	masked_img = input_img * mask_img
+	masked_img_nii = nib.Nifti1Image(masked_img, affine=np.eye(4))
+	nib.save(masked_img_nii, out_path)
