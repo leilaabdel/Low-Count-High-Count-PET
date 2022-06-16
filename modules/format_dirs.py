@@ -5,11 +5,11 @@ import os
 from tqdm import tqdm
 from modules import transforms
 import subprocess
+import pickle
+
 
 def move_reconstructed_files(starting_folder_path, final_data_path, recon_trial_name, ground_truth_path=None, recon_alg = "OP"):
     all_patient_paths = glob.glob(f"{starting_folder_path}")
-
-    recon_with_gt = None
 
     if ground_truth_path != None:
        

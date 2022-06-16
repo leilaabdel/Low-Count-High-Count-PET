@@ -9,7 +9,7 @@
 from scipy import io as sio
 import numpy as np
 import os
-from cafndl_fileio import prepare_data_from_nifti
+from cafndl_fileio import prepare_data_from_nifti, generate_file_list_object
 import nibabel as nib
 import datetime
 import matplotlib
@@ -22,6 +22,11 @@ from cafndl_utils import *
 from cafndl_network import *
 from keras.callbacks import ModelCheckpoint
 from keras.optimizers import Adam
+import tensorflow as tf
+import argparse
+
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+# exit()
 
 '''
 convert dicom to nifti
@@ -31,21 +36,29 @@ ckpt_id = sys.argv[1]
 '''
 dataset
 '''
-filename_checkpoint = '../ckpt/'+ckpt_id+'.ckpt'  # model_demo_1130_ASL_set1
+
+# filename_checkpoint = '../ckpt/'+ckpt_id+'.'  # model_demo_1130_ASL_set1
+filename_checkpoint = os.path.join('../ckpt' , "weights-{epoch:03d}-{val_loss:.4f}.hdf5")
 filename_init = ''
 USER = "leila"
 TRACER = "pbr28"
 FINAL_DATA_PATH_FOR_MODEL = f"/autofs/space/celer_001/users/{USER}/data/{TRACER}"
-list_dataset_train =  [
-				{ #4
-				 'input':[f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/OP-recon-180-s-low-count.nii",
-				 		#   '/data3/Amyloid/1350/mr_nifti/T1_nifti_inv.nii',
-#				 		  '/data3/Amyloid/1350/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-				 		#   '/data3/Amyloid/1350/mr_nifti/T2_nifti_inv.nii',
-				 		#   '/data3/Amyloid/1350/mr_nifti/T2_FLAIR_nifti_inv.nii'
-						   ],
-				 'gt':f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/gt_recon.nii.gz"
-				},
+FILTERED_PATIENT_LIST_WITH_GT = f"/autofs/space/celer_001/users/{USER}/working_{TRACER}/pickles/unfiltered_patient_list.pkl"
+
+
+list_dataset_train = generate_file_list_object(FILTERED_PATIENT_LIST_WITH_GT , FINAL_DATA_PATH_FOR_MODEL)
+
+## Generate the training dataset 
+# list_dataset_train =  [
+# 				{ #4
+# 				 'input':[f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/3600-180_OP.nii.gz",
+# 				 		  f'{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/mr_nifti/t1_img_registered.nii.gz',
+# #				 		  '/data3/Amyloid/1350/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
+# 				 		#   '/data3/Amyloid/1350/mr_nifti/T2_nifti_inv.nii',
+# 				 		#   '/data3/Amyloid/1350/mr_nifti/T2_FLAIR_nifti_inv.nii'
+# 						   ],
+# 				 'gt':f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/gt_recon.nii.gz"
+# 				},
 # 				{ #5
 # 				 'input':['/data3/Amyloid/1355/pet_nifti/501_.nii.gz',
 # 				 		  '/data3/Amyloid/1355/mr_nifti/T1_nifti_inv.nii',
@@ -358,7 +371,8 @@ list_dataset_train =  [
 # 				 		  '/data3/Amyloid/50767/mr_nifti/T2_FLAIR_nifti_inv.nii'],
 # 				 'gt':'/data3/Amyloid/50767/pet_nifti/500_.nii.gz'
 # 				}
-				] 
+				# ] 
+
 dir_train_histroy = '../ckpt/'
 num_dataset_train = len(list_dataset_train)                
 print('process {0} data description'.format(num_dataset_train))
@@ -423,7 +437,7 @@ index_sample_total = 0
 for index_data in range(num_dataset_train):
 	# directory
 	# headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/headmask_inv.nii', list_augments, False)
-	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1]), list_augments, False)
+	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/t1_mask_registered.nii.gz', list_augments, False)
 
 	list_data_train_input = []
 	for path_train_input in list_dataset_train[index_data]['input']:
@@ -480,7 +494,7 @@ init model
 '''
 callback_checkpoint = ModelCheckpoint(filename_checkpoint, 
 								monitor='val_loss', 
-								save_best_only=True)
+								save_best_only=True, save_weights_only=True, save_freq='epoch')
 setKerasMemory(keras_memory)
 model = deepEncoderDecoder(num_channel_input = num_channel_input,
 						num_channel_output = num_channel_output,
@@ -597,7 +611,7 @@ validation_generator = DataGenerator(**params_generator).generate(dir_samples, l
 '''
 sanity check
 
-model.fit_generator(
+model.fit(
 					generator = training_generator,
 					steps_per_epoch = 1,
 					epochs = 1,
@@ -614,7 +628,8 @@ setup learning
 '''
 # hyper parameter in each train iteration
 #list_hyper_parameters=[{'lr':0.001,'epochs':50},{'lr':0.0002,'epochs':50},{'lr':0.0001,'epochs':30}]
-list_hyper_parameters=[{'lr':0.0002,'epochs':3}]
+MOD_EPOCHS = 100
+list_hyper_parameters=[{'lr':0.0002,'epochs':MOD_EPOCHS}]
 type_activation_output = 'linear'
 
 
@@ -649,7 +664,9 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 		filename_checkpoint = hyper_train['ckpt']
 	else:
 		hyper_train['ckpt'] = filename_checkpoint
-	model_checkpoint = ModelCheckpoint(filename_checkpoint, monitor='val_loss', save_best_only=True)		
+	model_checkpoint =  ModelCheckpoint(filename_checkpoint, 
+								monitor='val_loss', 
+								save_best_only=True, save_weights_only=True, save_freq='epoch')	
 
 	# update leraning rate
 	if 'lr' in hyper_train:
@@ -674,7 +691,7 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 	t_start_train = datetime.datetime.now()
 	
 	try:
-		# history = model.fit(data_train_input,
+		# history = model.fit_generator(data_train_input,
 		# 				data_train_residual, 
 		# 				epochs=epochs, 
 		# 				callbacks=[model_checkpoint],
