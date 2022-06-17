@@ -629,7 +629,9 @@ setup learning
 # hyper parameter in each train iteration
 #list_hyper_parameters=[{'lr':0.001,'epochs':50},{'lr':0.0002,'epochs':50},{'lr':0.0001,'epochs':30}]
 MOD_EPOCHS = 100
-list_hyper_parameters=[{'lr':0.0002,'epochs':MOD_EPOCHS}]
+PRETRAINED_WEIGHTS = "/autofs/space/celer_001/users/leila/pretrained/mask_0127_set1.ckpt"
+
+list_hyper_parameters=[{'lr':0.0002,'epochs':MOD_EPOCHS, 'init':PRETRAINED_WEIGHTS}]
 type_activation_output = 'linear'
 
 
@@ -644,7 +646,7 @@ for index_hyper in range(index_hyper_start, num_hyper_parameter):
 	# init
 	if 'init' in hyper_train:
 		try:
-			model.load_weights(hyper_train['init'])
+			model.load_weights(hyper_train['init'], by_name= True, skip_mismatch = True)
 		except:
 			hyper_train['init'] = ''
 			print('failed to learn from init-point ' + hyper_train['init'])
