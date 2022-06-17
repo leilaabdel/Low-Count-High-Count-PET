@@ -7,7 +7,7 @@ import pickle
 import glob 
 import os
 
-def generate_file_list_object(filtered_patient_list_path, input_data_root, trial_time="3600-180", recon_alg="OP"):
+def generate_file_list_object(filtered_patient_list_path, input_data_root, trial_time="3600-180", recon_alg="OP", gt_registered=""):
     list_dataset_train = []
 
     with open(filtered_patient_list_path, "rb") as f:
@@ -21,7 +21,7 @@ def generate_file_list_object(filtered_patient_list_path, input_data_root, trial
             'input' : [ f"{input_data_root}/{patient}/pet_nifti/{trial_time}_{recon_alg}.nii.gz", 
             f"{input_data_root}/{patient}/mr_nifti/t1_img_registered.nii.gz"
             ],
-            'gt':f"{input_data_root}/{patient}/pet_nifti/gt_recon.nii.gz"
+            'gt':f"{input_data_root}/{patient}/pet_nifti/gt_recon{gt_registered}.nii.gz"
             })
 
     return list_dataset_train

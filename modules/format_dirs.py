@@ -58,16 +58,18 @@ def move_reconstructed_files(starting_folder_path, final_data_path, recon_trial_
                 t1_original_input_path = os.path.join(mri_destination, "t1_original.nii.gz")
                 shutil.copyfile(t1_source_path, t1_original_input_path)
 
-                ## Register the T1 Mask and Original T1 to the low count PET Img 
+                ## Register the T1 Mask, Original T1, and ground truth high count to the low count PET Img 
                 t1_mask_registered_path =  os.path.join(mri_destination, "t1_mask_registered.nii.gz")
                 t1_original_registered_path = os.path.join(mri_destination, "t1_img_registered.nii.gz")
+                gt_high_count_registered_path = os.path.join(pet_destination , "gt_recon_registered.nii.gz")
                 
                 transforms.register_imgs(static_img_path=low_count_input_path, 
                     moving_img_path=t1_mask_input_path, 
                     registered_output_path=t1_mask_registered_path)
                 transforms.register_imgs(static_img_path=low_count_input_path, 
                     moving_img_path=t1_original_input_path, 
-                    registered_output_path=t1_original_registered_path)   
+                    registered_output_path=t1_original_registered_path) 
+                transforms.register_imgs(static_img_path=low_count_input_path, moving_img_path=gt_pet_path, registered_output_path=gt_high_count_registered_path)  
 
 
                 
