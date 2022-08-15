@@ -41,339 +41,35 @@ dataset
 filename_checkpoint = os.path.join('../ckpt' , "weights-{epoch:03d}-{val_loss:.4f}.hdf5")
 filename_init = ''
 USER = "leila"
-TRACER = "pbr28"
+TRACER = "amyloid"
 FINAL_DATA_PATH_FOR_MODEL = f"/autofs/space/celer_001/users/{USER}/data/{TRACER}"
 FILTERED_PATIENT_LIST_WITH_GT = f"/autofs/space/celer_001/users/{USER}/working_{TRACER}/pickles/unfiltered_patient_list.pkl"
 
 
-list_dataset_train = generate_file_list_object(FILTERED_PATIENT_LIST_WITH_GT , FINAL_DATA_PATH_FOR_MODEL)
+# list_dataset_train = generate_file_list_object(FILTERED_PATIENT_LIST_WITH_GT , FINAL_DATA_PATH_FOR_MODEL)
 
 ## Generate the training dataset 
-# list_dataset_train =  [
-# 				{ #4
-# 				 'input':[f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/3600-180_OP.nii.gz",
-# 				 		  f'{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/mr_nifti/t1_img_registered.nii.gz',
-# #				 		  '/data3/Amyloid/1350/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		#   '/data3/Amyloid/1350/mr_nifti/T2_nifti_inv.nii',
-# 				 		#   '/data3/Amyloid/1350/mr_nifti/T2_FLAIR_nifti_inv.nii'
-# 						   ],
-# 				 'gt':f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/gt_recon.nii.gz"
-# 				},
-# 				{ #5
-# 				 'input':['/data3/Amyloid/1355/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1355/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1355/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1355/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1355/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1355/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #4
-# 				 'input':['/data3/Amyloid/1726/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1726/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1726/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1726/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1726/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1726/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #5
-# 				 'input':['/data3/Amyloid/1732/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1732/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1732/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1732/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1732/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1732/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #2
-# 				 'input':['/data3/Amyloid/1750/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1750/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1750/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1750/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1750/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1750/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #2
-# 				 'input':['/data3/Amyloid/1758/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1758/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1758/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1758/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1758/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1758/pet_nifti/500_.nii.gz'
-# 				},
-# #				{ #1
-# #				 'input':['/data3/Amyloid/1762/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/1762/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1762/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/1762/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1762/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/1762/pet_nifti/500_.nii.gz'
-# #				},
-# #				{ #1
-# #				 'input':['/data3/Amyloid/1785/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/1785/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1785/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/1785/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1785/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/1785/pet_nifti/500_.nii.gz'
-# #				},
-# #				{ #1 NEW
-# #				 'input':['/data3/Amyloid/1791/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/1791/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1791/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/1791/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1791/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/1791/pet_nifti/500_.nii.gz'
-# #				},
-# 				{ #3
-# 				 'input':['/data3/Amyloid/1827/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1827/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1827/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1827/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1827/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1827/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #3
-# 				 'input':['/data3/Amyloid/1838/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1838/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1838/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1838/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1838/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1838/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #3
-# 				 'input':['/data3/Amyloid/1905/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1905/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1905/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1905/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1905/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1905/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #3
-# 				 'input':['/data3/Amyloid/1907/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1907/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1907/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1907/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1907/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1907/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #5
-# 				 'input':['/data3/Amyloid/1947/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1947/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1947/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1947/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1947/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1947/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #4
-# 				 'input':['/data3/Amyloid/1978/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1978/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1978/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1978/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1978/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1978/pet_nifti/500_.nii.gz'
-# 				},
-# #				{ #1
-# #				 'input':['/data3/Amyloid/2014/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/2014/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2014/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/2014/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2014/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/2014/pet_nifti/500_.nii.gz'
-# #				},
-# 				{ #4
-# 				 'input':['/data3/Amyloid/2016/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2016/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2016/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2016/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2016/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2016/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #2 NEW
-# 				 'input':['/data3/Amyloid/2157/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2157/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2157/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2157/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2157/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2157/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #2 NEW
-# 				 'input':['/data3/Amyloid/2214/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2214/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2214/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2214/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2214/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2214/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #3 NEW
-# 				 'input':['/data3/Amyloid/2304/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2304/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2304/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2304/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2304/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2427/pet_nifti/500_.nii.gz'
-# 				},
-# #				{ #1 NEW (orig3)
-# #				 'input':['/data3/Amyloid/2317/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/2317/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2317/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/2317/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2317/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/2317/pet_nifti/500_.nii.gz'
-# #				},
-# 				{ #2 NEW (orig4)
-# 				 'input':['/data3/Amyloid/2376/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2376/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2376/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2376/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2376/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2376/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #4 NEW
-# 				 'input':['/data3/Amyloid/2427/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2427/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2427/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2427/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2427/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2427/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #5 NEW
-# 				 'input':['/data3/Amyloid/2482/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2482/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2482/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2482/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2482/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2482/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #5 NEW
-# 				 'input':['/data3/Amyloid/2516/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2516/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2516/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2516/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2516/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2516/pet_nifti/500_.nii.gz'
-# 				},
-# #				{ #1 NEW
-# #				 'input':['/data3/Amyloid/2414/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/2414/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2414/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/2414/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2414/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/2414/pet_nifti/500_.nii.gz'
-# #				},
-# 				{ #2 NEW
-# 				 'input':['/data3/Amyloid/1961/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1961/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1961/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1961/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1961/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1961/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #3 NEW
-# 				 'input':['/data3/Amyloid/2185/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2185/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2185/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2185/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2185/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2185/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #4 NEW
-# 				 'input':['/data3/Amyloid/2152/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2152/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2152/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2152/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2152/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2152/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #5 NEW
-# 				 'input':['/data3/Amyloid/2063/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2063/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2063/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2063/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2063/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2063/pet_nifti/500_.nii.gz'
-# 				},
-# #				{ #1 NEW
-# #				 'input':['/data3/Amyloid/1375/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/1375/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1375/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/1375/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1375/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/1375/pet_nifti/500_.nii.gz'
-# #				},
-# 				{ #2 NEW
-# 				 'input':['/data3/Amyloid/1789/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1789/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1789/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1789/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1789/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1789/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #3 NEW
-# 				 'input':['/data3/Amyloid/1816/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1816/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1816/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1816/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1816/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1816/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #4 NEW
-# 				 'input':['/data3/Amyloid/1965/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1965/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1965/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1965/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1965/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1965/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #5 NEW
-# 				 'input':['/data3/Amyloid/1923/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/1923/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/1923/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/1923/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/1923/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/1923/pet_nifti/500_.nii.gz'
-# 				},
-# #				{ #1 NEW
-# #				 'input':['/data3/Amyloid/2314/pet_nifti/501_.nii.gz',
-# #				 		  '/data3/Amyloid/2314/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2314/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# #				 		  '/data3/Amyloid/2314/mr_nifti/T2_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2314/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# #				 'gt':'/data3/Amyloid/2314/pet_nifti/500_.nii.gz'
-# #				},
-# 				{ #2 NEW
-# 				 'input':['/data3/Amyloid/2511/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2511/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2511/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2511/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2511/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2511/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #3 NEW
-# 				 'input':['/data3/Amyloid/2416/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2416/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2416/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2416/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2416/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2416/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #4 NEW
-# 				 'input':['/data3/Amyloid/2425/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/2425/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/2425/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/2425/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/2425/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/2425/pet_nifti/500_.nii.gz'
-# 				},
-# 				{ #5 NEW
-# 				 'input':['/data3/Amyloid/50767/pet_nifti/501_.nii.gz',
-# 				 		  '/data3/Amyloid/50767/mr_nifti/T1_nifti_inv.nii',
-# #				 		  '/data3/Amyloid/50767/mr_nifti/ASL_CBF_nifti_inv.nii.gz',
-# 				 		  '/data3/Amyloid/50767/mr_nifti/T2_nifti_inv.nii',
-# 				 		  '/data3/Amyloid/50767/mr_nifti/T2_FLAIR_nifti_inv.nii'],
-# 				 'gt':'/data3/Amyloid/50767/pet_nifti/500_.nii.gz'
-# 				}
-				# ] 
+list_dataset_train =  [
+				{ #4
+				 'input':[f"{FINAL_DATA_PATH_FOR_MODEL}/1947/pet_nifti/501_.nii.gz",
+				 		 f'{FINAL_DATA_PATH_FOR_MODEL}/1947/mr_nifti/T1_nifti_coreg.nii',
+				 		  f'{FINAL_DATA_PATH_FOR_MODEL}/1947/mr_nifti/T2_nifti_coreg.nii',
+				 		  f'{FINAL_DATA_PATH_FOR_MODEL}/1947/mr_nifti/T2_FLAIR_nifti_coreg.nii'
+						   ],
+				 'gt':f"{FINAL_DATA_PATH_FOR_MODEL}/1947/pet_nifti/500_.nii"
+				}, 
+				{ #5
+				 'input':[f"{FINAL_DATA_PATH_FOR_MODEL}/2425/pet_nifti/501_.nii.gz", # f"{FINAL_DATA_PATH_FOR_MODEL}/PBRKOA_HC021_01/pet_nifti/3600-180_OP.nii.gz",
+				 		  f'{FINAL_DATA_PATH_FOR_MODEL}/2425/mr_nifti/T1_nifti_coreg.nii',
+				 		  f"{FINAL_DATA_PATH_FOR_MODEL}/2425/mr_nifti/T2_nifti_coreg.nii",
+				 		  f"{FINAL_DATA_PATH_FOR_MODEL}/2425/mr_nifti/T2_FLAIR_nifti_coreg.nii"
+						   ],
+				 'gt':f"{FINAL_DATA_PATH_FOR_MODEL}/2425/pet_nifti/500_.nii"
+				},
+]
 
-dir_train_histroy = '../ckpt/'
+
+dir_train_history = '../ckpt/'
 num_dataset_train = len(list_dataset_train)                
 print('process {0} data description'.format(num_dataset_train))
 
@@ -407,6 +103,8 @@ scale_factor = 1/32768.
 ext_data = 'npz'
 dir_samples = '../data/data_sample/'
 
+os.makedirs(dir_samples, exist_ok=True)
+
 def export_data_to_npz(data_train_input, data_train_gt,dir_numpy_compressed, index_sample_total=0, ext_data = 'npz'):  
 	index_sample_accumuated = index_sample_total
 	num_sample_in_data = data_train_input.shape[0]
@@ -436,8 +134,8 @@ list_train_gt = []
 index_sample_total = 0      
 for index_data in range(num_dataset_train):
 	# directory
-	# headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/headmask_inv.nii', list_augments, False)
-	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/t1_mask_registered.nii.gz', list_augments, False)
+	headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/headmask_inv.nii', list_augments, False)
+	#headmask = prepare_data_from_nifti(os.path.dirname(list_dataset_train[index_data]['input'][1])+'/t1_.nii.gz', list_augments, False)
 
 	list_data_train_input = []
 	for path_train_input in list_dataset_train[index_data]['input']:
